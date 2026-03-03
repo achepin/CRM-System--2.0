@@ -1,3 +1,3 @@
 Алексей Чепин
 
-Телеграм @achepin
+[Мой Telegram](https://t.me/achepin)
