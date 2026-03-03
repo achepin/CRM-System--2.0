@@ -1,0 +1,112 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  min-height: 100vh;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f4f6f8;
+}
+
+.container {
+  max-width: 500px;
+  margin: 40px auto;
+  border-radius: 12px;
+  padding: 32px 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  background: #fff;
+}
+
+form {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+form input {
+  flex: 1;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 16px;
+}
+
+form button {
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  color: #fff;
+  font-size: 16px;
+  background: #2563eb;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+form button:hover {
+  background: #1d4ed8;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.filters button {
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 15px;
+  background: #e5e7eb;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+.filters button:hover {
+  background: #dbeafe;
+}
+.filters button.active {
+  color: #fff;
+  background: #2563eb;
+}
+
+.tasks ul {
+  list-style: none;
+}
+.tasks li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #f1f5f9;
+  padding: 10px 0;
+}
+.tasks li:last-child {
+  border-bottom: none;
+}
+.tasks input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #2563eb;
+}
+.tasks button {
+  border: none;
+  border-radius: 5px;
+  padding: 4px 10px;
+  font-size: 14px;
+  background: #f3f4f6;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+.tasks button:hover {
+  background: #dbeafe;
+}
+.tasks li {
+  transition: background 0.2s;
+}
+.tasks li:hover {
+  background: #f1f5f9;
+}
+
+/* тут добавил стиль для выполненных задач */
+.tasks li.done { 
+  color: #9ca3af;
+  text-decoration: line-through;
+}
