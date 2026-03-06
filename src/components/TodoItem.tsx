@@ -13,28 +13,44 @@ interface TodoItemProps {
 function TodoItem({ task, onToggle, onEdit, onDelete }: TodoItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(task.title);
+  const [error, setError] = useState('');
 
   const handleSave = () => {
-    if (!editText.trim()) return;
-    onEdit(task.id, editText);
+    const trimmed = editText.trim();
+    if (trimmed.length < 2) {
+      setError('Не менее 2 символов');
+      return;
+    }
+    if (trimmed.length > 64) {
+      setError('Не более 64 символов');
+      return;
+    }
+    setError('');
+    onEdit(task.id, trimmed);
     setIsEditing(false);
   };
 
   const handleCancel = () => {
     setEditText(task.title);
+    setError('');
     setIsEditing(false);
   };
 
   if (isEditing) {
     return (
-      <li key={task.id}>
-        <input
-          type="text"
-          value={editText}
-          onChange={(e) => setEditText(e.target.value)}
-        />
-        <button onClick={handleSave}>Сохранить</button>
-        <button onClick={handleCancel}>Отмена</button>
+      <li key={task.id} className="editing">
+        <div className="editing-row">
+          <input
+            type="text"
+            value={editText}
+            onChange={(e) => { setEditText(e.target.value); setError(''); }}
+          />
+          <button onClick={handleSave}>Сохранить</button>
+          <button onClick={handleCancel}>Отмена</button>
+        </div>
+        <div className="form-error">
+          <span>{error}</span>
+        </div>
       </li>
     );
   }
@@ -46,7 +62,7 @@ function TodoItem({ task, onToggle, onEdit, onDelete }: TodoItemProps) {
         checked={task.isDone}
         onChange={() => onToggle(task.id)}
       />
-      {task.title}
+      <span className="task-title">{task.title}</span>
       <button onClick={() => setIsEditing(true)}>Редактировать</button>
       <button onClick={() => onDelete(task.id)}>Удалить</button>
     </li>

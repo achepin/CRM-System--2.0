@@ -9,51 +9,53 @@ type Filter = 'all' | 'completed' | 'isDone';
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [allTasks, setAllTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState<Filter>('all');
 
+  // тут все задачи для счетчиков
   useEffect(() => {
-    TodosApi.getTodos().then((data) => {
-      const list = Array.isArray(data)
-        ? data
-        : (data?.todos ?? data?.data ?? []);
-      setTasks(list);
-    });
+    TodosApi.getTodos().then((data) => setAllTasks(data));
   }, []);
 
-  const filteredTasks = tasks.filter((task) => {
-    if (filter === 'all') return true;
-    if (filter === 'completed') return !task.isDone;
-    if (filter === 'isDone') return task.isDone;
-    return true;
-  });
+  // При смене фильтра запрос на сервер
+  useEffect(() => {
+    TodosApi.getTodos(filter).then((data) => setTasks(data));
+  }, [filter]);
 
   const handleAddTodo = (title: string) => {
     TodosApi.addTodo(title).then((newTask) => {
-      setTasks([...tasks, newTask]);
+      setAllTasks((prev) => [...prev, newTask]);
+      // Я заметил что если открыта вкладка "Сделано", новая задача там отображалась, хотя она не должна. Поэтому добавил проверку.
+      if (filter !== 'isDone') {
+        setTasks((prev) => [...prev, newTask]);
+      }
     });
   };
 
   const handleToggle = (id: number) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, isDone: !task.isDone } : task
-      )
-    );
+    const task = allTasks.find((t) => t.id === id);
+    if (!task) return;
+    TodosApi.toggleTodo(id, !task.isDone).then((updatedTask) => {
+      setAllTasks((prev) => prev.map((t) => (t.id === id ? updatedTask : t)));
+      TodosApi.getTodos(filter).then((data) => setTasks(data));
+    });
   };
 
   const handleEdit = (id: number, title: string) => {
     TodosApi.editTodo(id, title).then((updatedTask) => {
-      setTasks(
-        tasks.map((t) =>
-          t.id === id ? { ...updatedTask, isDone: t.isDone } : t
-        )
+      setAllTasks((prev) =>
+        prev.map((t) => (t.id === id ? { ...updatedTask, isDone: t.isDone } : t))
+      );
+      setTasks((prev) =>
+        prev.map((t) => (t.id === id ? { ...updatedTask, isDone: t.isDone } : t))
       );
     });
   };
 
   const handleDelete = (id: number) => {
     TodosApi.deleteTodo(id).then(() => {
-      setTasks(tasks.filter((t) => t.id !== id));
+      setAllTasks((prev) => prev.filter((t) => t.id !== id));
+      setTasks((prev) => prev.filter((t) => t.id !== id));
     });
   };
 
@@ -62,13 +64,13 @@ function App() {
       <TodoForm onAdd={handleAddTodo} />
       <TodoFilters
         filter={filter}
-        totalCount={tasks.length}
-        activeCount={tasks.filter((t) => !t.isDone).length}
-        doneCount={tasks.filter((t) => t.isDone).length}
+        totalCount={allTasks.length}
+        activeCount={allTasks.filter((t) => !t.isDone).length}
+        doneCount={allTasks.filter((t) => t.isDone).length}
         onFilterChange={setFilter}
       />
       <TodoList
-        tasks={filteredTasks}
+        tasks={tasks}
         onToggle={handleToggle}
         onEdit={handleEdit}
         onDelete={handleDelete}
