@@ -112,8 +112,10 @@ form button:hover {
 }
 
 /* тут добавил стиль для выполненных задач */
-.tasks li.done { 
+.tasks li.done {
   color: #9ca3af;
+}
+.tasks li.done .task-title {
   text-decoration: line-through;
 }
 
