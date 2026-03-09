@@ -5,12 +5,10 @@ import TodoItem from './TodoItem';
 
 interface TodoListProps {
   tasks: Task[];
-  onToggle: (id: number) => void;
-  onEdit: (id: number, title: string) => void;
-  onDelete: (id: number) => void;
+  updateTasks: () => Promise<void>;
 }
 
-function TodoList({ tasks, onToggle, onEdit, onDelete }: TodoListProps) {
+function TodoList({ tasks, updateTasks }: TodoListProps) {
   return (
     <div className="tasks">
       <ul>
@@ -18,9 +16,7 @@ function TodoList({ tasks, onToggle, onEdit, onDelete }: TodoListProps) {
           <TodoItem
             key={task.id}
             task={task}
-            onToggle={onToggle}
-            onEdit={onEdit}
-            onDelete={onDelete}
+            updateTasks={updateTasks}
           />
         ))}
       </ul>

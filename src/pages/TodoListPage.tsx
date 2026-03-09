@@ -30,47 +30,9 @@ function TodoListPage() {
     updateTasks();
   }, [filter]);
 
-  const handleAddTodo = async (title: string) => {
-    try {
-      await TodosApi.addTodo(title);
-      await updateTasks();
-    } catch (error) {
-      console.error('Ошибка добавления задачи:', error);
-    }
-  };
-
-  const handleToggle = async (id: number) => {
-    const task = allTasks.find((t) => t.id === id);
-    if (!task) return;
-    try {
-      await TodosApi.toggleTodo(id, !task.isDone);
-      await updateTasks();
-    } catch (error) {
-      console.error('Ошибка переключения задачи:', error);
-    }
-  };
-
-  const handleEdit = async (id: number, title: string) => {
-    try {
-      await TodosApi.editTodo(id, title);
-      await updateTasks();
-    } catch (error) {
-      console.error('Ошибка редактирования задачи:', error);
-    }
-  };
-
-  const handleDelete = async (id: number) => {
-    try {
-      await TodosApi.deleteTodo(id);
-      await updateTasks();
-    } catch (error) {
-      console.error('Ошибка удаления задачи:', error);
-    }
-  };
-
   return (
     <div className="container">
-      <TodoForm onAdd={handleAddTodo} />
+      <TodoForm updateTasks={updateTasks} />
       <TodoFilters
         filter={filter}
         totalCount={allTasks.length}
@@ -80,9 +42,7 @@ function TodoListPage() {
       />
       <TodoList
         tasks={tasks}
-        onToggle={handleToggle}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        updateTasks={updateTasks}
       />
     </div>
   );

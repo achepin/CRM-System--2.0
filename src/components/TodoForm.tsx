@@ -1,15 +1,16 @@
 // компонент для добавления новой задачи
 
 import React, { useState } from 'react';
+import { TodosApi } from '../API/TodosApi.tsx';
 
 interface TodoFormProps {
-  onAdd: (title: string) => void;
+  updateTasks: () => Promise<void>;
 }
 
-function TodoForm({ onAdd }: TodoFormProps) {
+function TodoForm({ updateTasks }: TodoFormProps) {
   const [error, setError] = useState('');
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const input = event.currentTarget.elements[0] as HTMLInputElement;
     const title = input.value.trim();
@@ -23,9 +24,14 @@ function TodoForm({ onAdd }: TodoFormProps) {
       return;
     }
 
-    setError('');
-    onAdd(title);
-    input.value = '';
+    try {
+      setError('');
+      await TodosApi.addTodo(title);
+      await updateTasks();
+      input.value = '';
+    } catch (err) {
+      console.error('Ошибка добавления задачи:', err);
+    }
   };
 
   return (

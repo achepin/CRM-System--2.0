@@ -2,20 +2,19 @@
 
 import { useState } from 'react';
 import { Task } from '../types/Task';
+import { TodosApi } from '../API/TodosApi.tsx';
 
 interface TodoItemProps {
   task: Task;
-  onToggle: (id: number) => void;
-  onEdit: (id: number, title: string) => void;
-  onDelete: (id: number) => void;
+  updateTasks: () => Promise<void>;
 }
 
-function TodoItem({ task, onToggle, onEdit, onDelete }: TodoItemProps) {
+function TodoItem({ task, updateTasks }: TodoItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(task.title);
   const [error, setError] = useState('');
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const trimmed = editText.trim();
     if (trimmed.length < 2) {
       setError('Не менее 2 символов');
@@ -25,15 +24,38 @@ function TodoItem({ task, onToggle, onEdit, onDelete }: TodoItemProps) {
       setError('Не более 64 символов');
       return;
     }
-    setError('');
-    onEdit(task.id, trimmed);
-    setIsEditing(false);
+    try {
+      setError('');
+      await TodosApi.editTodo(task.id, trimmed);
+      await updateTasks();
+      setIsEditing(false);
+    } catch (err) {
+      console.error('Ошибка редактирования задачи:', err);
+    }
   };
 
   const handleCancel = () => {
     setEditText(task.title);
     setError('');
     setIsEditing(false);
+  };
+
+  const handleToggle = async () => {
+    try {
+      await TodosApi.toggleTodo(task.id, !task.isDone);
+      await updateTasks();
+    } catch (err) {
+      console.error('Ошибка переключения задачи:', err);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await TodosApi.deleteTodo(task.id);
+      await updateTasks();
+    } catch (err) {
+      console.error('Ошибка удаления задачи:', err);
+    }
   };
 
   if (isEditing) {
@@ -60,11 +82,11 @@ function TodoItem({ task, onToggle, onEdit, onDelete }: TodoItemProps) {
       <input
         type="checkbox"
         checked={task.isDone}
-        onChange={() => onToggle(task.id)}
+        onChange={handleToggle}
       />
       <span className="task-title">{task.title}</span>
       <button onClick={() => setIsEditing(true)}>Редактировать</button>
-      <button onClick={() => onDelete(task.id)}>Удалить</button>
+      <button onClick={handleDelete}>Удалить</button>
     </li>
   );
 }
