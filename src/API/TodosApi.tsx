@@ -1,4 +1,4 @@
-import { Task } from '../types';
+import { Task } from '../types/Task';
 
 type Filter = 'all' | 'completed' | 'isDone';
 

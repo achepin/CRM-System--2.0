@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { TodosApi } from '../API/TodosApi.tsx';
-import { Task } from '../types.tsx';
+import { Task } from '../types/Task';
 import TodoForm from '../components/TodoForm';
 import TodoFilters from '../components/TodoFilters';
 import TodoList from '../components/TodoList';

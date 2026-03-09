@@ -1,7 +1,7 @@
 // Компонент для редактирования и отображения одной задачи
 
 import { useState } from 'react';
-import { Task } from '../types';
+import { Task } from '../types/Task';
 
 interface TodoItemProps {
   task: Task;

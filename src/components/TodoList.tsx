@@ -1,6 +1,6 @@
 // Компонент для отображения списка задач
 
-import { Task } from '../types';
+import { Task } from '../types/Task';
 import TodoItem from './TodoItem';
 
 interface TodoListProps {
