@@ -12,51 +12,40 @@ function TodoListPage() {
   const [allTasks, setAllTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState<Filter>('all');
 
-  // тут все задачи для счетчиков
-  useEffect(() => {
-    TodosApi.getTodos().then((data) => setAllTasks(data));
-  }, []);
+  const updateTasks = async () => {
+    const [filtered, all] = await Promise.all([
+      TodosApi.getTodos(filter),
+      TodosApi.getTodos(),
+    ]);
+    setTasks(filtered);
+    setAllTasks(all);
+  };
 
-  // При смене фильтра запрос на сервер
+  // При монтировании и смене фильтра — запрос с сервера
   useEffect(() => {
-    TodosApi.getTodos(filter).then((data) => setTasks(data));
+    updateTasks();
   }, [filter]);
 
-  const handleAddTodo = (title: string) => {
-    TodosApi.addTodo(title).then((newTask) => {
-      setAllTasks((prev) => [...prev, newTask]);
-      // Я заметил что если открыта вкладка "Сделано", новая задача там отображалась, хотя она не должна. Поэтому добавил проверку.
-      if (filter !== 'isDone') {
-        setTasks((prev) => [...prev, newTask]);
-      }
-    });
+  const handleAddTodo = async (title: string) => {
+    await TodosApi.addTodo(title);
+    await updateTasks();
   };
 
-  const handleToggle = (id: number) => {
+  const handleToggle = async (id: number) => {
     const task = allTasks.find((t) => t.id === id);
     if (!task) return;
-    TodosApi.toggleTodo(id, !task.isDone).then((updatedTask) => {
-      setAllTasks((prev) => prev.map((t) => (t.id === id ? updatedTask : t)));
-      TodosApi.getTodos(filter).then((data) => setTasks(data));
-    });
+    await TodosApi.toggleTodo(id, !task.isDone);
+    await updateTasks();
   };
 
-  const handleEdit = (id: number, title: string) => {
-    TodosApi.editTodo(id, title).then((updatedTask) => {
-      setAllTasks((prev) =>
-        prev.map((t) => (t.id === id ? { ...updatedTask, isDone: t.isDone } : t))
-      );
-      setTasks((prev) =>
-        prev.map((t) => (t.id === id ? { ...updatedTask, isDone: t.isDone } : t))
-      );
-    });
+  const handleEdit = async (id: number, title: string) => {
+    await TodosApi.editTodo(id, title);
+    await updateTasks();
   };
 
-  const handleDelete = (id: number) => {
-    TodosApi.deleteTodo(id).then(() => {
-      setAllTasks((prev) => prev.filter((t) => t.id !== id));
-      setTasks((prev) => prev.filter((t) => t.id !== id));
-    });
+  const handleDelete = async (id: number) => {
+    await TodosApi.deleteTodo(id);
+    await updateTasks();
   };
 
   return (
