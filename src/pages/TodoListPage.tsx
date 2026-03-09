@@ -13,12 +13,16 @@ function TodoListPage() {
   const [filter, setFilter] = useState<Filter>('all');
 
   const updateTasks = async () => {
-    const [filtered, all] = await Promise.all([
-      TodosApi.getTodos(filter),
-      TodosApi.getTodos(),
-    ]);
-    setTasks(filtered);
-    setAllTasks(all);
+    try {
+      const [filtered, all] = await Promise.all([
+        TodosApi.getTodos(filter),
+        TodosApi.getTodos(),
+      ]);
+      setTasks(filtered);
+      setAllTasks(all);
+    } catch (error) {
+      console.error('Ошибка загрузки задач:', error);
+    }
   };
 
   // При монтировании и смене фильтра — запрос с сервера
@@ -27,25 +31,41 @@ function TodoListPage() {
   }, [filter]);
 
   const handleAddTodo = async (title: string) => {
-    await TodosApi.addTodo(title);
-    await updateTasks();
+    try {
+      await TodosApi.addTodo(title);
+      await updateTasks();
+    } catch (error) {
+      console.error('Ошибка добавления задачи:', error);
+    }
   };
 
   const handleToggle = async (id: number) => {
     const task = allTasks.find((t) => t.id === id);
     if (!task) return;
-    await TodosApi.toggleTodo(id, !task.isDone);
-    await updateTasks();
+    try {
+      await TodosApi.toggleTodo(id, !task.isDone);
+      await updateTasks();
+    } catch (error) {
+      console.error('Ошибка переключения задачи:', error);
+    }
   };
 
   const handleEdit = async (id: number, title: string) => {
-    await TodosApi.editTodo(id, title);
-    await updateTasks();
+    try {
+      await TodosApi.editTodo(id, title);
+      await updateTasks();
+    } catch (error) {
+      console.error('Ошибка редактирования задачи:', error);
+    }
   };
 
   const handleDelete = async (id: number) => {
-    await TodosApi.deleteTodo(id);
-    await updateTasks();
+    try {
+      await TodosApi.deleteTodo(id);
+      await updateTasks();
+    } catch (error) {
+      console.error('Ошибка удаления задачи:', error);
+    }
   };
 
   return (
