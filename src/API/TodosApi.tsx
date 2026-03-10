@@ -1,12 +1,19 @@
-import { Task } from '../types';
+import { Task } from '../types/Task';
 
-type TodosResponse = Task[] | { todos?: Task[]; data?: Task[] };
+type Filter = 'all' | 'completed' | 'isDone';
 
 const BASE_URL = 'https://easydev.club/api/v1';
 
 export const TodosApi = {
-  getTodos(): Promise<TodosResponse> {
-    return fetch(`${BASE_URL}/todos`).then((res) => res.json());
+  getTodos(filter?: Filter): Promise<Task[]> {
+    return fetch(`${BASE_URL}/todos`)
+      .then((res) => res.json())
+      .then((data): Task[] => {
+        const list: Task[] = Array.isArray(data) ? data : (data?.todos ?? data?.data ?? []);
+        if (filter === 'isDone') return list.filter((t) => t.isDone);
+        if (filter === 'completed') return list.filter((t) => !t.isDone);
+        return list;
+      });
   },
 
   addTodo(title: string): Promise<Task> {
@@ -22,6 +29,14 @@ export const TodosApi = {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title }),
+    }).then((res) => res.json());
+  },
+
+  toggleTodo(id: number, isDone: boolean): Promise<Task> {
+    return fetch(`${BASE_URL}/todos/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ isDone }),
     }).then((res) => res.json());
   },
 

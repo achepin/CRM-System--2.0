@@ -10,7 +10,7 @@ body {
 }
 
 .container {
-  max-width: 500px;
+  max-width: 660px;
   margin: 40px auto;
   border-radius: 12px;
   padding: 32px 24px;
@@ -21,7 +21,7 @@ body {
 form {
   display: flex;
   gap: 12px;
-  margin-bottom: 24px;
+  margin-bottom: 4px;
 }
 
 form input {
@@ -77,6 +77,12 @@ form button:hover {
   gap: 10px;
   border-bottom: 1px solid #f1f5f9;
   padding: 10px 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+.tasks li span.task-title {
+  flex: 1;
+  min-width: 0;
 }
 .tasks li:last-child {
   border-bottom: none;
@@ -106,7 +112,33 @@ form button:hover {
 }
 
 /* тут добавил стиль для выполненных задач */
-.tasks li.done { 
+.tasks li.done {
   color: #9ca3af;
+}
+.tasks li.done .task-title {
   text-decoration: line-through;
+}
+
+.form-wrapper {
+  margin-bottom: 24px;
+}
+
+.form-error {
+  height: 20px;
+}
+
+.form-error span {
+  color: red;
+  font-size: 14px;
+}
+
+.tasks li.editing {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.editing-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
